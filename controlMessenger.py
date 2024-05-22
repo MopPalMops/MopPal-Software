@@ -2,10 +2,11 @@ import pygame
 import serial
 import time
 
-ser = serial.Serial('COM3', 9600) # Replace 'COM3' with the correct port for your device
+ser = serial.Serial('COM7', 9600) # Change COM7 to your COM port
 
 MAX_JOYSTICK_VALUE = 1.0
 MIN_JOYSTICK_VALUE = -1.0
+
 
 DEBOUNCE_DELAY = 0.2
 
@@ -36,20 +37,17 @@ def log_ps4_controller_input():
                         
                         if (abs(x_value) >= 0.5 or abs(y_value) >= 0.5) and (y_value < 0.1):
                             if time.time() - last_input_time > DEBOUNCE_DELAY:
-                                if abs(x_value) < 0.1:
-                                    gpio1_percentage = map_value(abs(y_value), MIN_JOYSTICK_VALUE, MAX_JOYSTICK_VALUE, 0, 100)
-                                    gpio2_percentage = map_value(abs(y_value), MIN_JOYSTICK_VALUE, MAX_JOYSTICK_VALUE, 0, 100)
+                                if abs(x_value) >= 0.5:
+                                    gpio1_percentage = map_value(x_value, MIN_JOYSTICK_VALUE, MAX_JOYSTICK_VALUE, 0, 100)
+                                    gpio2_percentage = map_value(x_value, MIN_JOYSTICK_VALUE, MAX_JOYSTICK_VALUE, 100, 0)
                                 else:
-                                    percentage_x = map_value(abs(x_value), MIN_JOYSTICK_VALUE, MAX_JOYSTICK_VALUE, 0, 100)
-                                    percentage_y = map_value(y_value, MIN_JOYSTICK_VALUE, MAX_JOYSTICK_VALUE, 0, 100)
-                                    
-                                    if x_value >= 0:
-                                        gpio1_percentage = percentage_x
-                                        gpio2_percentage = percentage_y
+                                    if y_value < -0.5:
+                                        gpio1_percentage = 100
+                                        gpio2_percentage = 100
                                     else:
-                                        gpio1_percentage = percentage_y
-                                        gpio2_percentage = percentage_x
-
+                                        gpio1_percentage = 0
+                                        gpio2_percentage = 0
+                                
                                 data_to_send = f"GPIO1: {gpio1_percentage}%, GPIO2: {gpio2_percentage}%"
                                 print(data_to_send)
                                 ser.write(data_to_send.encode())

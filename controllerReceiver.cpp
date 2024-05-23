@@ -1,7 +1,7 @@
 #include <Arduino.h>
 
-#define GPIO1_PIN PIN_PA17
-#define GPIO2_PIN PIN_PA18
+#define GPIO1_PIN 9  // Use the correct pin number for GPIO1
+#define GPIO2_PIN 10 // Use the correct pin number for GPIO2
 
 void setup() {
   Serial.begin(9600);
